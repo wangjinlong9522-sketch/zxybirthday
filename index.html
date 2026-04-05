@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日惊喜</title>
+    <style>
+        body { background: #ffe4e1; text-align: center; padding-top: 50px; font-family: sans-serif; }
+        .box { font-size: 100px; cursor: pointer; margin-top: 50px; }
+        #content { display: none; }
+        /* 适配你的 jpeg 照片 */
+        img { width: 90%; max-width: 400px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
+        h1 { color: #ff69b4; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="cover" onclick="openSurprise()">
+        <div class="box">🎁</div>
+        <p>有一份礼物待拆开</p>
+    </div>
+
+    <div id="content">
+        <h1>🎉 生日快乐！🎉</h1>
+        <img src="pic.jpeg">
+        <p>愿你岁岁常欢愉，年年皆胜意</p>
+    </div>
+
+    <audio id="audio" src="music.m4a" loop></audio>
+
+    <script>
+        function openSurprise() {
+            document.getElementById('cover').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            var song = document.getElementById('audio');
+            // M4A 格式在手机浏览器兼容性很好，放心使用
+            song.play();
+        }
+    </script>
+</body>
+</html>
