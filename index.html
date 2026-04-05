@@ -1,41 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生日惊喜</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给你准备的小惊喜</title>
     <style>
-        body { background: #ffe4e1; text-align: center; padding-top: 50px; font-family: sans-serif; }
-        .box { font-size: 100px; cursor: pointer; margin-top: 50px; }
-        #content { display: none; }
-        /* 适配你的 jpeg 照片 */
-        img { width: 90%; max-width: 400px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
-        h1 { color: #ff69b4; margin-top: 20px; }
+        /* 基础样式 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000; /* 主视频阶段背景设为黑色，更像电影 */
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* 第一阶段：小狗推盒子容器 */
+        #intro-stage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff; /* 小狗阶段背景设为白色，更温馨 */
+            transition: opacity 0.8s ease; /* 增加一点渐变时间，更丝滑 */
+        }
+
+        #dog-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            cursor: pointer;
+        }
+
+        /* 延迟显示的提示文字 */
+        #click-hint {
+            position: absolute;
+            bottom: 90%; /* 已按你的要求调高 */
+            width: 100%;
+            text-align: center;
+            color: #ff85a2;
+            font-size: 2rem;
+            font-weight: bold;
+            pointer-events: none;
+            
+            opacity: 0; 
+            animation: 
+                fadeIn 0.8s ease forwards 2s, 
+                bounce 2s infinite 2.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* 第二阶段：主视频内容容器 (初始隐藏) */
+        #surprise-stage {
+            display: none;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #000;
+        }
+
+        /* 主视频样式：铺满全屏，带控制条 */
+        #main-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 保证视频全部显示，不被裁剪，上下留黑边 */
+        }
     </style>
 </head>
 <body>
 
-    <div id="cover" onclick="openSurprise()">
-        <div class="box">🎁</div>
-        <p>有一份礼物待拆开</p>
+    <div id="intro-stage">
+        <video id="dog-video" 
+               src="dog-push.mp4" 
+               muted 
+               autoplay 
+               playsinline 
+               webkit-playsinline>
+        </video>
+        <div id="click-hint">🎁 麻麻戳盒子</div>
     </div>
 
-    <div id="content">
-        <h1>🎉 生日快乐！🎉</h1>
-        <img src="pic.jpeg">
-        <p>愿你岁岁常欢愉，年年皆胜意</p>
+    <div id="surprise-stage">
+        <video id="main-video" 
+               src="love-video.mp4" 
+               playsinline 
+               webkit-playsinline 
+               controls>
+            你的浏览器不支持视频播放。
+        </video>
     </div>
-
-    <audio id="audio" src="music.m4a" loop></audio>
 
     <script>
-        function openSurprise() {
-            document.getElementById('cover').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
-            var song = document.getElementById('audio');
-            // M4A 格式在手机浏览器兼容性很好，放心使用
-            song.play();
-        }
+        const dogVideo = document.getElementById('dog-video');
+        const introStage = document.getElementById('intro-stage');
+        const surpriseStage = document.getElementById('surprise-stage');
+        const mainVideo = document.getElementById('main-video');
+
+        // 尝试自动播放小狗视频
+        dogVideo.play().catch(e => console.log("等待手动触发"));
+
+        // 点击切换
+        dogVideo.addEventListener('click', function() {
+            // 消失动画
+            introStage.style.opacity = '0';
+            
+            setTimeout(() => {
+                introStage.style.display = 'none';
+                surpriseStage.style.display = 'block';
+                
+                // 【核心】播放主视频
+                // 因为是用户主动点击了视频，现在浏览器允许播放带声音的视频了！
+                if(mainVideo) {
+                    mainVideo.play().catch(e => {
+                        console.log("主视频自动播放被拦截，这通常是因为手机浏览器策略", e);
+                        // 如果自动播放失败，尝试静音播放（最后的手段）
+                        // mainVideo.muted = true;
+                        // mainVideo.play();
+                    });
+                }
+
+            }, 800); // 0.8秒后完成切换，配合CSS动画
+        });
     </script>
 </body>
 </html>
